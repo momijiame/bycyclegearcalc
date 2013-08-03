@@ -177,13 +177,19 @@ $(function () {
         divRowDOM.append(divColumnDOM);
 
         _.each(_.range(numOfRearGears), function(j) {
-            var divColumnDOM = $("<div>", {"class": "span1"});
-            var inputRearGearDOM = $("<input>", {
+            var divColumnDOM = $("<div>").addClass("span1");
+            var divControlGroupDOM = $("<div>", {
+                id: "divControlGroupGearRatio" + (i + 1) + "x" + (j + 1)
+            }).addClass("control-group");
+            var divControlsDOM = $("<div>").addClass("controls");
+            var inputGearRatioDOM = $("<input>", {
                 type: "text",
                 id: "inputGearRatio" + (i + 1) + "x" + (j + 1),
                 readonly: true
             }).addClass("input-block-level");
-            divColumnDOM.append(inputRearGearDOM);
+            divColumnDOM.append(divControlGroupDOM);
+            divControlGroupDOM.append(divControlsDOM);
+            divControlsDOM.append(inputGearRatioDOM);
             divRowDOM.append(divColumnDOM);
         });
         $("#div-gears").append(divRowDOM);
@@ -216,9 +222,28 @@ $(function () {
     $("#div-gears").append(divRowDOM);
 
     $("#input-button-apply").bind("click", function() {
+        _.each(_.range(numOfFrontGears), function(i) {
+            _.each(_.range(numOfRearGears), function(j) {
+                var divControlGroupGearRatioDOM = $("#divControlGroupGearRatio" + (i + 1) + "x" + (j + 1));
+                divControlGroupGearRatioDOM.removeClass();
+                divControlGroupGearRatioDOM.addClass("control-group");
+            });
+        });
         var rearGearToothesList = [];
         chartJson["series"] = [];
         _.each(_.range(numOfFrontGears), function(i) {
+            function getInputDecoratorClass(value) {
+                if (value < 2.0) {
+                    return "info";
+                }
+                if (value < 3.0) {
+                    return "success";
+                }
+                if (value < 4.0) {
+                    return "warning";
+                }
+                return "error";
+            }
             var frontGearToothes = $("#inputFrontGear" + (i + 1) + "S").val();
             var gearRatioList = [];
             _.each(_.range(numOfRearGears), function(j) {
@@ -230,6 +255,8 @@ $(function () {
                 }
                 var gearRatio = (frontGearToothes / rearGearToothes).toFixed(2);
                 inputGearRatioDOM.val(gearRatio);
+                var divControlGroupGearRatioDOM = $("#divControlGroupGearRatio" + (i + 1) + "x" + (j + 1));
+                divControlGroupGearRatioDOM.addClass(getInputDecoratorClass(gearRatio));
                 gearRatioList.push(parseFloat(gearRatio));
                 rearGearToothesList.push(rearGearToothes);
             });
@@ -268,4 +295,4 @@ $(function () {
             inputFrontGear.val(value);
         });
     });
-    });
+});
