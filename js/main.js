@@ -44,7 +44,7 @@ var cassetteSprocketList = [
     },
     {
         name: "Shimano 10speed 12-25T",
-        value: "12-13-14-15-16-17-18-19-21-23"
+        value: "12-13-14-15-16-17-19-21-23-25"
     },
     {
         name: "Shimano 10speed 12-30T",
