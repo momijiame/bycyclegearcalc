@@ -1,9 +1,80 @@
 
 var numOfRearGears = 11;
-var defaultRearToothesList = [11, 12, 13, 14, 15, 17, 19, 21, 23, 25];
-
 var numOfFrontGears = 3;
-var defaultFrontToothesList = [52, 39];
+
+var cranksetList = [
+    {
+        name: "Shimano double 50-34T",
+        value: "50-34"
+    },
+    {
+        name: "Shimano double 52-39T",
+        value: "52-39"
+    },
+    {
+        name: "Shimano double 53-39T",
+        value: "53-39"
+    },
+    {
+        name: "Shimano triple 52-30T",
+        value: "52-39-30"
+    }
+];
+
+var cassetteSprocketList = [
+    {
+        name: "Shimano 10speed 11-21T",
+        value: "11-12-13-14-15-16-17-18-19-21"
+    },
+    {
+        name: "Shimano 10speed 11-23T",
+        value: "11-12-13-14-15-16-17-19-21-23"
+    },
+    {
+        name: "Shimano 10speed 11-25T",
+        value: "11-12-13-14-15-17-19-21-23-25"
+    },
+    {
+        name: "Shimano 10speed 11-27T",
+        value: "11-12-13-14-15-17-19-21-24-27"
+    },
+    {
+        name: "Shimano 10speed 11-28T",
+        value: "11-12-13-14-15-17-19-21-24-28"
+    },
+    {
+        name: "Shimano 10speed 12-25T",
+        value: "12-13-14-15-16-17-18-19-21-23"
+    },
+    {
+        name: "Shimano 10speed 12-30T",
+        value: "12-13-14-15-17-19-21-24-27-30"
+    },
+    {
+        name: "Shimano 11speed 11-23T",
+        value: "11-12-13-14-15-16-17-18-19-21-23"
+    },
+    {
+        name: "Shimano 11speed 11-25T",
+        value: "11-12-13-14-15-16-17-19-21-23-25"
+    },
+    {
+        name: "Shimano 11speed 11-28T",
+        value: "11-12-13-14-15-17-19-21-23-25-28"
+    },
+    {
+        name: "Shimano 11speed 11-32T",
+        value: "11-12-13-14-16-18-20-22-25-28-32"
+    },
+    {
+        name: "Shimano 11speed 12-25T",
+        value: "12-13-14-15-16-17-18-19-21-23-25"
+    },
+    {
+        name: "Shimano 11speed 11-28T",
+        value: "12-13-14-15-16-17-19-21-23-25-28"
+    }
+];
 
 var chartJson = {
     title: {
@@ -50,6 +121,22 @@ var chartJson = {
 
 $(function () {
 
+    _.each(cranksetList, function(entry) {
+        var optionDOM = $("<option>", {
+            value: entry["value"]
+        }).html(entry["name"]);
+        $("#crankset-selector").append(optionDOM);
+    });
+
+    _.each(cassetteSprocketList, function(entry) {
+        var optionDOM = $("<option>", {
+            value: entry["value"]
+        }).html(entry["name"]);
+        $("#cassette-sprocket-selector").append(optionDOM);
+    });
+
+    var sprocketSelectedValue = $("#cassette-sprocket-selector").children(':selected').val();
+    var sprocketToothesList = sprocketSelectedValue.split("-");
     _.each(_.range(numOfRearGears), function(i) {
         var divColumnDOM = $("<div>").addClass("span1");
         var divControlGroupDOM = $("<div>", {
@@ -60,7 +147,7 @@ $(function () {
             type: "text",
             placeholder: (i + 1) + "S",
             id: "inputRearGear" + (i + 1) + "S",
-            value: defaultRearToothesList[i]
+            value: sprocketToothesList[i]
         }).addClass("input-block-level");
         divColumnDOM.append(divControlGroupDOM);
         divControlGroupDOM.append(divControlsDOM);
@@ -69,6 +156,8 @@ $(function () {
         $("#div-front-gears").append(divColumnDOM);
     });
 
+    var cranksetSelectedValue = $("#crankset-selector").children(':selected').val();
+    var cranksetToothesList = cranksetSelectedValue.split("-");
     _.each(_.range(numOfFrontGears), function(i) {
         var divRowDOM = $("<div>").addClass("row");
         var divColumnDOM = $("<div>").addClass("span1");
@@ -80,7 +169,7 @@ $(function () {
             type: "text",
             placeholder: (i + 1) + "S",
             id: "inputFrontGear" + (i + 1) + "S",
-            value: defaultFrontToothesList[i]
+            value: cranksetToothesList[i]
         }).addClass("input-block-level");
         divColumnDOM.append(divControlGroupDOM);
         divControlGroupDOM.append(divControlsDOM);
@@ -153,4 +242,30 @@ $(function () {
 
         $("#container").highcharts(chartJson);
     });
-});
+
+    $("#cassette-sprocket-selector").bind("change", function() {
+        var selectedValue = $("#cassette-sprocket-selector").children(':selected').val();
+        var sprocketToothesList = selectedValue.split("-");
+        _.each(_.range(numOfRearGears - sprocketToothesList.length), function(i) {
+            var inputRearGear = $("#inputRearGear" + (numOfRearGears - i) + "S");
+            inputRearGear.val("");
+        });
+        _.each(sprocketToothesList, function(value, i) {
+            var inputRearGear = $("#inputRearGear" + (i + 1) + "S");
+            inputRearGear.val(value);
+        });
+    });
+
+    $("#crankset-selector").bind("change", function() {
+        var selectedValue = $("#crankset-selector").children(':selected').val();
+        var cranksetToothesList = selectedValue.split("-");
+        _.each(_.range(numOfFrontGears - cranksetToothesList.length), function(i) {
+            var inputFrontGear = $("#inputFrontGear" + (numOfFrontGears - i) + "S");
+            inputFrontGear.val("");
+        });
+        _.each(cranksetToothesList, function(value, i) {
+            var inputFrontGear = $("#inputFrontGear" + (i + 1) + "S");
+            inputFrontGear.val(value);
+        });
+    });
+    });
