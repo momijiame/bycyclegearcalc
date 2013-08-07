@@ -4,8 +4,20 @@ var numOfFrontGears = 3;
 
 var cranksetList = [
     {
+        name: "Shimano double 46-36T",
+        value: "46-36"
+    },
+    {
         name: "Shimano double 50-34T",
         value: "50-34"
+    },
+    {
+        name: "Shimano double 52-36T",
+        value: "52-36"
+    },
+    {
+        name: "Shimano double 52-38T",
+        value: "52-38"
     },
     {
         name: "Shimano double 52-39T",
